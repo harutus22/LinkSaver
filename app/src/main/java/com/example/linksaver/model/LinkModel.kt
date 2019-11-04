@@ -5,14 +5,15 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
-class LinkModel(
+@Entity(tableName = "link_table")
+data class LinkModel(
     @PrimaryKey(autoGenerate = true)
     var id: Long? = null,
     var address: String? = null,
     var description: String? = "",
     var imageUri: String? = null,
-    var priority: Int
+    var priority: Int,
+    val type: List<String> = mutableListOf()
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -20,7 +21,10 @@ class LinkModel(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readInt()
+        parcel.readInt(),
+        mutableListOf<String>().apply {
+            parcel.readList(this as List<*>, String::class.java.classLoader)
+        }
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -29,6 +33,7 @@ class LinkModel(
         parcel.writeString(description)
         parcel.writeString(imageUri)
         parcel.writeInt(priority)
+        parcel.writeList(type)
     }
 
     override fun describeContents(): Int {

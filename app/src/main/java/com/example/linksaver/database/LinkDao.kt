@@ -6,11 +6,14 @@ import com.example.linksaver.model.LinkModel
 
 @Dao
 interface LinkDao{
-    @Query("SELECT * FROM LinkModel ORDER BY id")
-    fun getAllLinks(): LiveData<List<LinkModel>>
+    @Query("SELECT * FROM link_table ORDER BY id")
+    fun getAllLinks(): LiveData<MutableList<LinkModel>>
 
-    @Query("SELECT * FROM LinkModel ORDER BY priority DESC")
-    fun getByPriority(): List<LinkModel>
+    @Query("SELECT * FROM link_table ORDER BY priority DESC")
+    fun getByPriority(): MutableList<LinkModel>
+
+    @Query("SELECT * FROM link_table WHERE type = :linkType")
+    fun getThisType(linkType: String): MutableList<LinkModel>
 
     @Insert
     fun add(linkModel: LinkModel)
