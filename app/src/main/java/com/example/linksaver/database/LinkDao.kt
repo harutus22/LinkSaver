@@ -10,10 +10,10 @@ interface LinkDao{
     fun getAllLinks(): LiveData<MutableList<LinkModel>>
 
     @Query("SELECT * FROM link_table ORDER BY priority DESC")
-    fun getByPriority(): MutableList<LinkModel>
+    fun orderByPriority(): MutableList<LinkModel>
 
     @Query("SELECT * FROM link_table WHERE type = :linkType")
-    fun getThisType(linkType: String): MutableList<LinkModel>
+    fun getCurrentType(linkType: String): MutableList<LinkModel>
 
     @Insert
     fun add(linkModel: LinkModel)

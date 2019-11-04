@@ -33,11 +33,11 @@ class Repository(context: Context) {
     }
 
     fun getAllByPriority(): MutableList<LinkModel>{
-        return linkDao.getByPriority()
+        return linkDao.orderByPriority()
     }
 
     fun getCurrentType(type: String): MutableList<LinkModel>{
-        return linkDao.getThisType(type)
+        return linkDao.getCurrentType(type)
     }
 
 

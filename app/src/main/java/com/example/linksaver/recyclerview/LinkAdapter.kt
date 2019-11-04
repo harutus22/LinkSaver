@@ -11,11 +11,20 @@ import com.example.linksaver.R
 import com.example.linksaver.model.LinkModel
 
 
-class LinkAdapter(var linkModelList: MutableList<LinkModel>,
-                  private val onLinkItemClickListener: OnLinkItemClickListener):
-    RecyclerView.Adapter<LinkAdapter.LinkViewHolder>(){
+class LinkAdapter(
+    var linkModelList: MutableList<LinkModel>,
+    private val onLinkItemClickListener: OnLinkItemClickListener
+) :
+    RecyclerView.Adapter<LinkAdapter.LinkViewHolder>() {
+    private var itemsCopy: MutableList<LinkModel> = mutableListOf()
+
+    init {
+        itemsCopy.addAll(linkModelList)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LinkViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.link_item_view, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.link_item_view, parent, false)
         return LinkViewHolder(view, onLinkItemClickListener)
     }
 
@@ -27,23 +36,25 @@ class LinkAdapter(var linkModelList: MutableList<LinkModel>,
         val linkItem = linkModelList[position]
         holder.linkUrl.text = linkItem.address
         holder.linkDescription.text = linkItem.description
-        holder.linkPriority.setBackgroundColor(Color.BLUE)
+        holder.linkPriority.setBackgroundColor(getColor(linkItem.priority))
         holder.linkImage.setImageResource(R.drawable.ic_launcher_foreground)
     }
 
-    fun updateList(list: MutableList<LinkModel>){
+    fun updateList(list: MutableList<LinkModel>) {
         linkModelList.clear()
+        itemsCopy.clear()
+        itemsCopy.addAll(list)
         linkModelList.addAll(list)
         notifyDataSetChanged()
     }
 
-    fun linkAt(position: Int): LinkModel{
+    fun linkAt(position: Int): LinkModel {
         return linkModelList[position]
     }
 
 
-    inner class LinkViewHolder(itemView: View, onLinkItemClickListener: OnLinkItemClickListener):
-        RecyclerView.ViewHolder(itemView){
+    inner class LinkViewHolder(itemView: View, onLinkItemClickListener: OnLinkItemClickListener) :
+        RecyclerView.ViewHolder(itemView) {
         val linkImage = itemView.findViewById<ImageView>(R.id.linkImage)
         val linkUrl = itemView.findViewById<TextView>(R.id.linkUrl)
         val linkDescription = itemView.findViewById<TextView>(R.id.linkDescription)
@@ -55,8 +66,36 @@ class LinkAdapter(var linkModelList: MutableList<LinkModel>,
             }
         }
     }
+
+    fun filter(text: String) {
+        linkModelList.clear()
+        if (text.isEmpty()) {
+            linkModelList.addAll(itemsCopy)
+        } else {
+            val newText = text.toLowerCase()
+            for (item in itemsCopy) {
+                if (item.description!!.toLowerCase().contains(newText) || item.imageUri!!.toLowerCase().contains(
+                        newText
+                    )
+                ) {
+                    linkModelList.add(item)
+                }
+            }
+        }
+        notifyDataSetChanged()
+    }
+
+    private fun getColor(priority: Int): Int {
+        return when (priority) {
+            1 -> Color.GREEN
+            2 -> Color.BLUE
+            3 -> Color.YELLOW
+            4 -> Color.CYAN
+            else -> Color.RED
+        }
+    }
 }
 
-interface OnLinkItemClickListener{
+interface OnLinkItemClickListener {
     fun onItemClick(linkModel: LinkModel)
 }
